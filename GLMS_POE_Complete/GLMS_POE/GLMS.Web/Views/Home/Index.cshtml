@@ -1,0 +1,81 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>Dashboard</h1>
+        <p>Global Logistics Management System — TechMove Overview</p>
+    </div>
+    <a asp-controller="Contracts" asp-action="Create" class="btn btn--primary">+ New Contract</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card stat-card--blue"><div class="stat-label">Total Clients</div><div class="stat-value">@Model.TotalClients</div></div>
+    <div class="stat-card stat-card--blue"><div class="stat-label">Total Contracts</div><div class="stat-value">@Model.TotalContracts</div></div>
+    <div class="stat-card stat-card--green"><div class="stat-label">Active Contracts</div><div class="stat-value">@Model.ActiveContracts</div></div>
+    <div class="stat-card stat-card--red"><div class="stat-label">Expired</div><div class="stat-value">@Model.ExpiredContracts</div></div>
+    <div class="stat-card stat-card--amber"><div class="stat-label">Pending Requests</div><div class="stat-value">@Model.PendingRequests</div></div>
+    <div class="stat-card stat-card--cyan"><div class="stat-label">Total Requests</div><div class="stat-value">@Model.TotalServiceRequests</div></div>
+</div>
+
+<div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;margin-bottom:2rem">
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--c-text3);margin-bottom:1rem">Live Exchange Rates → ZAR</div>
+    <div style="display:flex;gap:2.5rem;flex-wrap:wrap">
+        <div>
+            <div style="font-size:.72rem;color:var(--c-text3);margin-bottom:.3rem">USD / ZAR</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--c-green)">@Model.UsdToZar.ToString("F4")</div>
+        </div>
+        <div>
+            <div style="font-size:.72rem;color:var(--c-text3);margin-bottom:.3rem">EUR / ZAR</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--c-blue)">@Model.EurToZar.ToString("F4")</div>
+        </div>
+        <div>
+            <div style="font-size:.72rem;color:var(--c-text3);margin-bottom:.3rem">GBP / ZAR</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--c-purple)">@Model.GbpToZar.ToString("F4")</div>
+        </div>
+    </div>
+</div>
+
+<div class="dash-grid">
+    <div class="table-card">
+        <div class="table-header"><span class="table-title">Recent Contracts</span><a asp-controller="Contracts" asp-action="Index" class="btn btn--secondary btn--sm">View All</a></div>
+        @if (Model.RecentContracts.Any())
+        {
+            <table>
+                <thead><tr><th>Title</th><th>Client</th><th>Status</th><th>Expires</th></tr></thead>
+                <tbody>
+                @foreach (var c in Model.RecentContracts)
+                {
+                    <tr>
+                        <td><a asp-controller="Contracts" asp-action="Details" asp-route-id="@c.Id" class="link">@c.Title</a></td>
+                        <td>@c.Client?.Name</td>
+                        <td><span class="badge badge--@c.Status.ToString().ToLower()">@c.Status</span></td>
+                        <td>@c.EndDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else { <div class="empty"><div class="empty-icon">📄</div><div class="empty-text">No contracts yet</div></div> }
+    </div>
+    <div class="table-card">
+        <div class="table-header"><span class="table-title">Recent Service Requests</span><a asp-controller="ServiceRequests" asp-action="Index" class="btn btn--secondary btn--sm">View All</a></div>
+        @if (Model.RecentRequests.Any())
+        {
+            <table>
+                <thead><tr><th>Description</th><th>Currency</th><th>ZAR</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var r in Model.RecentRequests)
+                {
+                    <tr>
+                        <td><a asp-controller="ServiceRequests" asp-action="Details" asp-route-id="@r.Id" class="link">@(r.Description.Length>38?r.Description[..38]+"…":r.Description)</a></td>
+                        <td><span class="badge badge--@r.Currency.ToLower()">@r.Currency</span></td>
+                        <td style="font-family:'JetBrains Mono',monospace;color:var(--c-green)">R @r.CostZAR.ToString("N2")</td>
+                        <td><span class="badge badge--@r.Status.ToString().ToLower()">@r.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else { <div class="empty"><div class="empty-icon">🚚</div><div class="empty-text">No requests yet</div></div> }
+    </div>
+</div>

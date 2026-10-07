@@ -1,0 +1,29 @@
+@model ServiceRequest
+@{ ViewData["Title"] = $"Request #{Model.Id}"; }
+<div class="page-header"><div class="page-header-left"><h1>Service Request #@Model.Id</h1><p>@Model.Contract?.Client?.Name — @Model.Contract?.Title</p></div><div class="btn-group"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn--secondary">Edit</a><a asp-action="Index" class="btn btn--secondary">← Back</a></div></div>
+<div class="detail-grid">
+    <div class="detail-panel">
+        <div class="detail-panel-title">Request Information</div>
+        <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val"><span class="badge badge--@Model.Status.ToString().ToLower()">@Model.Status</span></span></div>
+        <div class="detail-row"><span class="detail-key">Priority</span><span class="detail-val">@Model.Priority</span></div>
+        <div class="detail-row"><span class="detail-key">Requested By</span><span class="detail-val">@Model.RequestedBy</span></div>
+        <div class="detail-row"><span class="detail-key">Date Raised</span><span class="detail-val">@Model.DateRaised.ToString("dd MMMM yyyy HH:mm")</span></div>
+        <div style="padding:.7rem 0;font-size:.875rem;color:var(--c-text1);line-height:1.7;border-bottom:1px solid var(--c-border)">@Model.Description</div>
+    </div>
+    <div class="detail-panel">
+        <div class="detail-panel-title">Financial Details</div>
+        <div class="detail-row"><span class="detail-key">Currency</span><span class="detail-val"><span class="badge badge--@Model.Currency.ToLower()">@Model.Currency</span></span></div>
+        <div class="detail-row"><span class="detail-key">Original Cost</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace">@Model.Currency @Model.OriginalCost.ToString("N2")</span></div>
+        <div class="detail-row"><span class="detail-key">Cost (ZAR)</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace;color:var(--c-green);font-size:1.3rem;font-weight:700">R @Model.CostZAR.ToString("N2")</span></div>
+        <div class="detail-row"><span class="detail-key">Rate Used</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace;font-size:.82rem">@Model.ExchangeRateToZAR.ToString("F4") ZAR/@Model.Currency</span></div>
+    </div>
+    <div class="detail-panel detail-panel--full">
+        <div class="detail-panel-title">Linked Contract</div>
+        @if(Model.Contract!=null){
+            <div class="detail-row"><span class="detail-key">Title</span><span class="detail-val"><a asp-controller="Contracts" asp-action="Details" asp-route-id="@Model.ContractId" class="link">@Model.Contract.Title</a></span></div>
+            <div class="detail-row"><span class="detail-key">Client</span><span class="detail-val">@Model.Contract.Client?.Name</span></div>
+            <div class="detail-row"><span class="detail-key">Contract Status</span><span class="detail-val"><span class="badge badge--@Model.Contract.Status.ToString().ToLower()">@Model.Contract.Status</span></span></div>
+            <div class="detail-row"><span class="detail-key">Service Level</span><span class="detail-val"><span class="badge badge--@Model.Contract.ServiceLevel.ToString().ToLower()">@Model.Contract.ServiceLevel</span></span></div>
+        }
+    </div>
+</div>

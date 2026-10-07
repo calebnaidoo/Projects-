@@ -1,0 +1,28 @@
+@model Client
+@{ ViewData["Title"] = Model.Name; }
+<div class="page-header"><div class="page-header-left"><h1>@Model.Name</h1><p>@Model.Region</p></div><div class="btn-group"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn--secondary">Edit</a><a asp-action="Index" class="btn btn--secondary">← Back</a></div></div>
+<div class="detail-grid">
+    <div class="detail-panel">
+        <div class="detail-panel-title">Client Information</div>
+        <div class="detail-row"><span class="detail-key">Name</span><span class="detail-val">@Model.Name</span></div>
+        <div class="detail-row"><span class="detail-key">Contact</span><span class="detail-val">@Model.ContactPerson</span></div>
+        <div class="detail-row"><span class="detail-key">Email</span><span class="detail-val">@Model.Email</span></div>
+        <div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val">@Model.Phone</span></div>
+        <div class="detail-row"><span class="detail-key">Region</span><span class="detail-val">@Model.Region</span></div>
+        <div class="detail-row"><span class="detail-key">Registered</span><span class="detail-val">@Model.CreatedAt.ToString("dd MMM yyyy")</span></div>
+    </div>
+    <div class="detail-panel">
+        <div class="detail-panel-title">Contract Summary</div>
+        <div class="detail-row"><span class="detail-key">Total</span><span class="detail-val">@Model.Contracts.Count</span></div>
+        <div class="detail-row"><span class="detail-key">Active</span><span class="detail-val" style="color:var(--c-green)">@Model.Contracts.Count(c=>c.Status==ContractStatus.Active)</span></div>
+        <div class="detail-row"><span class="detail-key">Expired</span><span class="detail-val" style="color:var(--c-red)">@Model.Contracts.Count(c=>c.Status==ContractStatus.Expired)</span></div>
+        <div class="detail-row"><span class="detail-key">Total Value</span><span class="detail-val">$@Model.Contracts.Sum(c=>c.ContractValueUSD).ToString("N2")</span></div>
+    </div>
+    <div class="detail-panel detail-panel--full">
+        <div class="detail-panel-title">Contracts (@Model.Contracts.Count)</div>
+        @if(Model.Contracts.Any()){
+        <table><thead><tr><th>Title</th><th>Level</th><th>Start</th><th>End</th><th>Status</th><th></th></tr></thead>
+        <tbody>@foreach(var c in Model.Contracts){<tr><td>@c.Title</td><td><span class="badge badge--@c.ServiceLevel.ToString().ToLower()">@c.ServiceLevel</span></td><td>@c.StartDate.ToString("dd MMM yyyy")</td><td>@c.EndDate.ToString("dd MMM yyyy")</td><td><span class="badge badge--@c.Status.ToString().ToLower()">@c.Status</span></td><td><a asp-controller="Contracts" asp-action="Details" asp-route-id="@c.Id" class="btn btn--secondary btn--sm">View</a></td></tr>}</tbody></table>
+        }else{<div class="empty" style="padding:2rem"><div class="empty-text">No contracts for this client.</div></div>}
+    </div>
+</div>

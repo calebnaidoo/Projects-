@@ -1,0 +1,23 @@
+@model IEnumerable<ServiceRequest>
+@{ ViewData["Title"] = "Service Requests"; }
+<div class="page-header"><div class="page-header-left"><h1>Service Requests</h1><p>@Model.Count() total</p></div><a asp-action="Create" class="btn btn--primary">+ New Request</a></div>
+<div class="table-card">
+    <div class="table-header"><span class="table-title">All Service Requests</span></div>
+    @if(Model.Any()){
+    <table><thead><tr><th>Description</th><th>Contract</th><th>Client</th><th>Currency</th><th>Original</th><th>ZAR</th><th>Priority</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>@foreach(var r in Model){
+        <tr>
+            <td title="@r.Description">@(r.Description.Length>40?r.Description[..40]+"…":r.Description)</td>
+            <td style="font-size:.8rem;color:var(--c-text2)">@(r.Contract?.Title?.Length>25?r.Contract.Title[..25]+"…":r.Contract?.Title)</td>
+            <td>@r.Contract?.Client?.Name</td>
+            <td><span class="badge badge--@r.Currency.ToLower()">@r.Currency</span></td>
+            <td style="font-family:'JetBrains Mono',monospace">@r.OriginalCost.ToString("N2")</td>
+            <td style="font-family:'JetBrains Mono',monospace;color:var(--c-green);font-weight:600">R @r.CostZAR.ToString("N2")</td>
+            <td><span style="font-size:.8rem;font-weight:600;color:@(r.Priority=="Urgent"?"var(--c-red)":r.Priority=="High"?"var(--c-amber)":"var(--c-text3)")">@r.Priority</span></td>
+            <td><span class="badge badge--@r.Status.ToString().ToLower()">@r.Status</span></td>
+            <td style="font-size:.8rem">@r.DateRaised.ToString("dd MMM yyyy")</td>
+            <td><div class="btn-group"><a asp-action="Details" asp-route-id="@r.Id" class="btn btn--secondary btn--sm">View</a><a asp-action="Edit" asp-route-id="@r.Id" class="btn btn--secondary btn--sm">Edit</a><a asp-action="Delete" asp-route-id="@r.Id" class="btn btn--danger btn--sm">Del</a></div></td>
+        </tr>
+    }</tbody></table>
+    }else{<div class="empty"><div class="empty-icon">🚚</div><div class="empty-text">No service requests yet.</div></div>}
+</div>

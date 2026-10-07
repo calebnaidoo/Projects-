@@ -1,0 +1,13 @@
+@model ServiceRequest
+@{ ViewData["Title"] = "Delete Request"; }
+<div class="page-header"><h1 style="font-size:1.6rem;font-weight:700">Delete Service Request</h1></div>
+<div class="form-card" style="max-width:500px">
+    <div class="warn-box">⚠ This action is permanent.</div>
+    <div class="detail-row"><span class="detail-key">Description</span><span class="detail-val" style="text-align:right;max-width:260px">@Model.Description</span></div>
+    <div class="detail-row"><span class="detail-key">Contract</span><span class="detail-val">@Model.Contract?.Title</span></div>
+    <div class="detail-row"><span class="detail-key">@Model.Currency Amount</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace">@Model.OriginalCost.ToString("N2")</span></div>
+    <div class="detail-row"><span class="detail-key">ZAR Amount</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace;color:var(--c-green)">R @Model.CostZAR.ToString("N2")</span></div>
+    <form asp-action="Delete" method="post" style="margin-top:1.5rem"><input type="hidden" asp-for="Id"/>
+        <div class="form-actions" style="border:none;padding:0;margin:0"><button type="submit" class="btn btn--danger">Delete</button><a asp-action="Index" class="btn btn--secondary">Cancel</a></div>
+    </form>
+</div>

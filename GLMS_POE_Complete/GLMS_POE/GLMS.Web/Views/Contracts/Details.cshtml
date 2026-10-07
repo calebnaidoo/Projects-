@@ -1,0 +1,52 @@
+@model Contract
+@{ ViewData["Title"] = Model.Title; }
+<div class="page-header">
+    <div class="page-header-left"><h1>@Model.Title</h1><p>@Model.Client?.Name</p></div>
+    <div class="btn-group">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn--secondary">Edit</a>
+        @if(!string.IsNullOrEmpty(Model.SignedAgreementPath)){<a asp-action="DownloadAgreement" asp-route-id="@Model.Id" class="btn btn--secondary">Download PDF</a>}
+        @if(Model.Status==ContractStatus.Active||Model.Status==ContractStatus.Draft){<a asp-controller="ServiceRequests" asp-action="Create" asp-route-contractId="@Model.Id" class="btn btn--primary">+ Service Request</a>}
+    </div>
+</div>
+@if(Model.Status==ContractStatus.Expired||Model.Status==ContractStatus.OnHold){<div class="info-box">⚠ This contract is <strong>@Model.Status</strong>. Service requests cannot be raised against it.</div>}
+<div class="detail-grid">
+    <div class="detail-panel">
+        <div class="detail-panel-title">Contract Details</div>
+        <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val"><span class="badge badge--@Model.Status.ToString().ToLower()">@Model.Status</span></span></div>
+        <div class="detail-row"><span class="detail-key">Client</span><span class="detail-val"><a asp-controller="Clients" asp-action="Details" asp-route-id="@Model.ClientId" class="link">@Model.Client?.Name</a></span></div>
+        <div class="detail-row"><span class="detail-key">Service Level</span><span class="detail-val"><span class="badge badge--@Model.ServiceLevel.ToString().ToLower()">@Model.ServiceLevel</span></span></div>
+        <div class="detail-row"><span class="detail-key">Start Date</span><span class="detail-val">@Model.StartDate.ToString("dd MMMM yyyy")</span></div>
+        <div class="detail-row"><span class="detail-key">End Date</span><span class="detail-val">@Model.EndDate.ToString("dd MMMM yyyy")</span></div>
+        <div class="detail-row"><span class="detail-key">Value (USD)</span><span class="detail-val" style="font-family:'JetBrains Mono',monospace">$@Model.ContractValueUSD.ToString("N2")</span></div>
+        @if(!string.IsNullOrEmpty(Model.Notes)){<div class="detail-row"><span class="detail-key">Notes</span><span class="detail-val" style="text-align:left;max-width:260px">@Model.Notes</span></div>}
+        @if(!string.IsNullOrEmpty(Model.SignedAgreementFileName)){<div class="detail-row"><span class="detail-key">Agreement</span><span class="detail-val"><a asp-action="DownloadAgreement" asp-route-id="@Model.Id" class="link">@Model.SignedAgreementFileName</a></span></div>}
+    </div>
+    <div class="detail-panel">
+        <div class="detail-panel-title">Update Status</div>
+        <p style="font-size:.845rem;color:var(--c-text2);margin-bottom:1rem">Change contract lifecycle status:</p>
+        <form asp-action="UpdateStatus" method="post" style="display:flex;flex-wrap:wrap;gap:.5rem">
+            <input type="hidden" name="id" value="@Model.Id"/>
+            @foreach(ContractStatus s in Enum.GetValues(typeof(ContractStatus))){
+                <button type="submit" name="newStatus" value="@s" class="btn @(Model.Status==s?"btn--primary":"btn--secondary") btn--sm">@s</button>
+            }
+        </form>
+    </div>
+    <div class="detail-panel detail-panel--full">
+        <div class="detail-panel-title">Service Requests (@Model.ServiceRequests.Count)</div>
+        @if(Model.ServiceRequests.Any()){
+        <table><thead><tr><th>Description</th><th>Currency</th><th>Original</th><th>ZAR</th><th>Rate</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+        <tbody>@foreach(var r in Model.ServiceRequests.OrderByDescending(r=>r.DateRaised)){
+            <tr>
+                <td title="@r.Description">@(r.Description.Length>45?r.Description[..45]+"…":r.Description)</td>
+                <td><span class="badge badge--@r.Currency.ToLower()">@r.Currency</span></td>
+                <td style="font-family:'JetBrains Mono',monospace">@r.OriginalCost.ToString("N2")</td>
+                <td style="font-family:'JetBrains Mono',monospace;color:var(--c-green)">R @r.CostZAR.ToString("N2")</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--c-text3)">@r.ExchangeRateToZAR.ToString("F4")</td>
+                <td>@r.Priority</td>
+                <td><span class="badge badge--@r.Status.ToString().ToLower()">@r.Status</span></td>
+                <td><a asp-controller="ServiceRequests" asp-action="Details" asp-route-id="@r.Id" class="btn btn--secondary btn--sm">View</a></td>
+            </tr>
+        }</tbody></table>
+        }else{<div class="empty" style="padding:2rem"><div class="empty-text">No service requests yet.</div></div>}
+    </div>
+</div>

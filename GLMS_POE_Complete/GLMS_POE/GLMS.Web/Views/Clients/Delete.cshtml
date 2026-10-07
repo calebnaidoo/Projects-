@@ -1,0 +1,11 @@
+@model Client
+@{ ViewData["Title"] = "Delete Client"; }
+<div class="page-header"><h1 style="font-size:1.6rem;font-weight:700">Delete Client</h1></div>
+<div class="form-card" style="max-width:480px">
+    <div class="warn-box">⚠ This action is permanent and cannot be undone.</div>
+    <div class="detail-row"><span class="detail-key">Name</span><span class="detail-val">@Model.Name</span></div>
+    <div class="detail-row"><span class="detail-key">Contracts</span><span class="detail-val">@Model.Contracts.Count</span></div>
+    <form asp-action="Delete" method="post" style="margin-top:1.5rem"><input type="hidden" asp-for="Id"/>
+        <div class="form-actions" style="border:none;padding:0;margin:0"><button type="submit" class="btn btn--danger">Delete Client</button><a asp-action="Index" class="btn btn--secondary">Cancel</a></div>
+    </form>
+</div>

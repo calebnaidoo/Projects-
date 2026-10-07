@@ -1,0 +1,13 @@
+@model Contract
+@{ ViewData["Title"] = "Delete Contract"; }
+<div class="page-header"><h1 style="font-size:1.6rem;font-weight:700">Delete Contract</h1></div>
+<div class="form-card" style="max-width:500px">
+    <div class="warn-box">⚠ Deleting removes all linked service requests permanently.</div>
+    <div class="detail-row"><span class="detail-key">Title</span><span class="detail-val">@Model.Title</span></div>
+    <div class="detail-row"><span class="detail-key">Client</span><span class="detail-val">@Model.Client?.Name</span></div>
+    <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val"><span class="badge badge--@Model.Status.ToString().ToLower()">@Model.Status</span></span></div>
+    <div class="detail-row"><span class="detail-key">Requests</span><span class="detail-val">@Model.ServiceRequests.Count</span></div>
+    <form asp-action="Delete" method="post" style="margin-top:1.5rem"><input type="hidden" asp-for="Id"/>
+        <div class="form-actions" style="border:none;padding:0;margin:0"><button type="submit" class="btn btn--danger">Delete Contract</button><a asp-action="Index" class="btn btn--secondary">Cancel</a></div>
+    </form>
+</div>

@@ -1,0 +1,77 @@
+@model ServiceRequestFormViewModel
+@{ ViewData["Title"] = "New Service Request"; }
+<div class="page-header"><div class="page-header-left"><h1>New Service Request</h1><p>Raise a request against an active contract</p></div><a asp-action="Index" class="btn btn--secondary">← Back</a></div>
+
+<div class="form-card" style="max-width:860px">
+    <div class="currency-panel">
+        <div class="currency-panel-header">
+            <div>
+                <div class="currency-panel-title">Live Exchange Rates → ZAR</div>
+                <div style="margin-top:.4rem;display:flex;align-items:center;gap:.5rem">
+                    <div class="currency-live-badge"><div class="currency-live-dot"></div><span id="rateStatus">Fetching…</span></div>
+                </div>
+            </div>
+            <div class="currency-rates">
+                <div class="currency-rate-item"><div class="currency-rate-code">USD/ZAR</div><div class="currency-rate-val" data-rate-display="USD">@Model.UsdToZar.ToString("F4")</div></div>
+                <div class="currency-rate-item"><div class="currency-rate-code">EUR/ZAR</div><div class="currency-rate-val" data-rate-display="EUR">@Model.EurToZar.ToString("F4")</div></div>
+                <div class="currency-rate-item"><div class="currency-rate-code">GBP/ZAR</div><div class="currency-rate-val" data-rate-display="GBP">@Model.GbpToZar.ToString("F4")</div></div>
+            </div>
+        </div>
+        <div>
+            <div class="currency-result-label">Converted Amount (ZAR)</div>
+            <div class="currency-result-val" id="zarResult">R —</div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post">
+        <input type="hidden" id="CostZAR" asp-for="CostZAR"/>
+        <input type="hidden" id="ExchangeRateToZAR" asp-for="ExchangeRateToZAR"/>
+        <input type="hidden" id="UsdToZar" value="@Model.UsdToZar"/>
+        <input type="hidden" id="EurToZar" value="@Model.EurToZar"/>
+        <input type="hidden" id="GbpToZar" value="@Model.GbpToZar"/>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:1rem"></div>
+        <div class="form-grid">
+            <div class="form-group form-group--full">
+                <label asp-for="ContractId" class="form-label">Contract (Active contracts only)</label>
+                <select asp-for="ContractId" asp-items="Model.ContractList"><option value="">— Select an Active Contract —</option></select>
+                <span asp-validation-for="ContractId" class="text-danger"></span>
+                <div class="form-hint">Only Active contracts are shown. Expired and On Hold contracts cannot receive requests.</div>
+            </div>
+            <div class="form-group form-group--full">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" rows="3" placeholder="Describe the logistics service required…"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Currency" class="form-label"></label>
+                <select asp-for="Currency" id="Currency">
+                    @if(ViewBag.Currencies != null){
+                        foreach(var kv in (Dictionary<string,string>)ViewBag.Currencies){
+                            <option value="@kv.Key" selected="@(kv.Key=="USD")">@kv.Value</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="OriginalCost" class="form-label"></label>
+                <input asp-for="OriginalCost" id="OriginalCost" type="number" step="0.01" min="0.01" placeholder="0.00"/>
+                <span asp-validation-for="OriginalCost" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Priority" class="form-label"></label>
+                <select asp-for="Priority"><option value="Low">Low</option><option value="Normal" selected>Normal</option><option value="High">High</option><option value="Urgent">Urgent</option></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RequestedBy" class="form-label"></label>
+                <input asp-for="RequestedBy" placeholder="Full name of requesting manager"/>
+                <span asp-validation-for="RequestedBy" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn--primary">Submit Request</button><a asp-action="Index" class="btn btn--secondary">Cancel</a></div>
+    </form>
+</div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}

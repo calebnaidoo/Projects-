@@ -1,0 +1,28 @@
+@model ContractFilterViewModel
+@{ ViewData["Title"] = "Contracts"; }
+<div class="page-header"><div class="page-header-left"><h1>Contracts</h1><p>@Model.Contracts.Count found</p></div><a asp-action="Create" class="btn btn--primary">+ New Contract</a></div>
+<form asp-action="Index" method="get" class="filter-bar">
+    <div class="filter-group"><label class="filter-label">Search</label><input type="text" name="search" value="@Model.SearchTerm" placeholder="Title or client…"/></div>
+    <div class="filter-group"><label class="filter-label">Start From</label><input type="date" name="startFrom" value="@Model.StartDateFrom?.ToString("yyyy-MM-dd")"/></div>
+    <div class="filter-group"><label class="filter-label">Start To</label><input type="date" name="startTo" value="@Model.StartDateTo?.ToString("yyyy-MM-dd")"/></div>
+    <div class="filter-group"><label class="filter-label">Status</label><select name="status"><option value="">All</option>@foreach(ContractStatus s in Enum.GetValues(typeof(ContractStatus))){<option value="@s" selected="@(Model.StatusFilter==s)">@s</option>}</select></div>
+    <div class="filter-group" style="flex:0;min-width:auto"><label class="filter-label" style="visibility:hidden">_</label><div style="display:flex;gap:.5rem"><button type="submit" class="btn btn--primary">Filter</button><a asp-action="Index" class="btn btn--secondary">Reset</a></div></div>
+</form>
+<div class="table-card">
+    <div class="table-header"><span class="table-title">All Contracts</span></div>
+    @if(Model.Contracts.Any()){
+    <table><thead><tr><th>Title</th><th>Client</th><th>Level</th><th>Start</th><th>End</th><th>Status</th><th>Value (USD)</th><th>PDF</th><th>Actions</th></tr></thead>
+    <tbody>@foreach(var c in Model.Contracts){
+        <tr>
+            <td>@c.Title</td>
+            <td><a asp-controller="Clients" asp-action="Details" asp-route-id="@c.ClientId" class="link">@c.Client?.Name</a></td>
+            <td><span class="badge badge--@c.ServiceLevel.ToString().ToLower()">@c.ServiceLevel</span></td>
+            <td>@c.StartDate.ToString("dd MMM yyyy")</td><td>@c.EndDate.ToString("dd MMM yyyy")</td>
+            <td><span class="badge badge--@c.Status.ToString().ToLower()">@c.Status</span></td>
+            <td style="font-family:'JetBrains Mono',monospace">$@c.ContractValueUSD.ToString("N2")</td>
+            <td>@if(!string.IsNullOrEmpty(c.SignedAgreementPath)){<a asp-action="DownloadAgreement" asp-route-id="@c.Id" class="btn btn--secondary btn--sm">PDF</a>}else{<span style="color:var(--c-text3);font-size:.78rem">—</span>}</td>
+            <td><div class="btn-group"><a asp-action="Details" asp-route-id="@c.Id" class="btn btn--secondary btn--sm">View</a><a asp-action="Edit" asp-route-id="@c.Id" class="btn btn--secondary btn--sm">Edit</a><a asp-action="Delete" asp-route-id="@c.Id" class="btn btn--danger btn--sm">Del</a></div></td>
+        </tr>
+    }</tbody></table>
+    }else{<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No contracts found.</div></div>}
+</div>

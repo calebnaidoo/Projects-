@@ -1,0 +1,24 @@
+@model ContractFormViewModel
+@{ ViewData["Title"] = "Edit Contract"; }
+<div class="page-header"><div class="page-header-left"><h1>Edit Contract</h1><p>@Model.Title</p></div><a asp-action="Index" class="btn btn--secondary">← Back</a></div>
+<div class="form-card">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id"/>
+        <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:1rem"></div>
+        <div class="form-grid">
+            <div class="form-group form-group--full"><label asp-for="Title" class="form-label"></label><input asp-for="Title"/><span asp-validation-for="Title" class="text-danger"></span></div>
+            <div class="form-group"><label class="form-label">Client</label><select asp-for="ClientId" asp-items="Model.ClientList"><option value="">— Select —</option></select></div>
+            <div class="form-group"><label asp-for="ServiceLevel" class="form-label"></label><select asp-for="ServiceLevel" asp-items="Html.GetEnumSelectList<ServiceLevel>()"></select></div>
+            <div class="form-group"><label asp-for="StartDate" class="form-label"></label><input asp-for="StartDate" type="date"/></div>
+            <div class="form-group"><label asp-for="EndDate" class="form-label"></label><input asp-for="EndDate" type="date"/></div>
+            <div class="form-group"><label asp-for="Status" class="form-label"></label><select asp-for="Status" asp-items="Html.GetEnumSelectList<ContractStatus>()"></select></div>
+            <div class="form-group"><label asp-for="ContractValueUSD" class="form-label"></label><input asp-for="ContractValueUSD" type="number" step="0.01" min="0"/></div>
+            <div class="form-group form-group--full"><label asp-for="Notes" class="form-label"></label><textarea asp-for="Notes"></textarea></div>
+            <div class="form-group form-group--full"><label class="form-label">Replace PDF (leave blank to keep current)</label>
+                @if(!string.IsNullOrEmpty(Model.ExistingFileName)){<div style="margin-bottom:.6rem;padding:.5rem .9rem;background:var(--c-surface2);border-radius:var(--r);border:1px solid var(--c-border);font-size:.82rem;color:var(--c-blue)">Current: @Model.ExistingFileName</div>}
+                <div class="file-drop"><input type="file" name="SignedAgreement" accept=".pdf"/><div class="file-drop-label"><strong>Browse</strong> to replace<div class="file-drop-name">No file chosen</div></div></div></div>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn--primary">Update Contract</button><a asp-action="Details" asp-route-id="@Model.Id" class="btn btn--secondary">Cancel</a></div>
+    </form>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
