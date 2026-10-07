@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BetWise</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="categories">Categories</string>
+    <string name="sessions">Sessions</string>
+    <string name="goals">Goals</string>
+    <string name="reports">Reports</string>
+    <string name="rewards">Rewards</string>
+    <string name="settings">Settings</string>
+</resources>
